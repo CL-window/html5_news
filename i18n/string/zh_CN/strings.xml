@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">你好</string>
+    <string name="app_name">PhoneGap2</string>
+    <string name="title_activity_main">标题</string>
+    <string name="hello_world">你好啊!</string>
+</resources>

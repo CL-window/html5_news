@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../common/css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="../common/css/box.css"/>
+    <link rel="stylesheet" type="text/css" href="../common/css/color.css"/>
+    <link rel="stylesheet" type="text/css" href="../common/css/media.css"/>
+    <link rel="stylesheet" type="text/css" href="../common/co/css/co.css" />
+	<link rel="stylesheet" type="text/css" href="css/new_file.css"/>
+</head>
+<body class="c-wh">
+	<div id="imgDiv-js" class="box box-ov mar-a t-wh">
+	</div>
+</body>
+<script src="../common/co/native.js"></script>
+<script src="../common/co/dom.js"></script>
+<script src="../common/co/co.js"></script>
+<script src="../common/js/app.js"></script>
+<script src="js/config.js"></script>
+<script src="js/custom.js"></script>
+<script>
+	var _imgnews;
+	var nowpage = 1;
+	var isImgLastPage = false;
+	var isImgLoading = false;
+	domReady(function(require){
+		if($.os.ios){
+			$showProgress();
+		}
+		getHeader();
+		_imgnews = new _dt.DB.Tab("imgnews");
+		getDataLists();
+		var headerRefresher = view.addHeaderRefresh({
+            contentdown: '下拉可以刷新',
+            contentover: '释放立即刷新',
+            contentrefresh: '正在刷新...',
+            callback:function(){
+            	var nowpage = 1;
+				var isImgLoading = true;
+				var isImgLastPage = false;
+				getDataLists();
+                headerRefresher.completeRefresh();
+            }
+          }); 
+         var footerRefresher = view.addFooterRefresh({
+            contentdown: '上拉可以加载',
+            contentover: '释放立即加载',
+            contentrefresh: '正在加载...',
+            callback:function(){
+            	getDataLists();
+                footerRefresher.completeRefresh();
+            }
+          }); 
+	});
+    
+    function getDataLists(){
+    	 var _option = {
+            page:nowpage,
+            size:10,
+            where:null
+        };
+        _imgnews.getListData(_option,function(err){
+            app.alert("网络连接超时");
+        },function(data){
+        	if(isImgLoading){
+	    		$("#imgDiv-js").empty();
+	    		isImgLoading = false;
+	    	}
+        	if(data.data && !isImgLastPage){
+        		if(data.data.length == data.size){
+	    			nowpage += 1;
+	    		}else{
+	    			isImgLastPage = true;
+	    		}
+	        	for(var i in data.data){
+	            	var imgHtmls = '';
+	                var imgObj = data.data[i];
+//	                alert(i);
+	                imgHtmls +='<div id="'+imgObj._id+'" class="imgInfo-js banner bg-img1 box box-ov mar-b">';
+					imgHtmls +='<div class="font-wei padd-a omit1">' + imgObj.title + '</div>';
+					imgHtmls +='<div class="box box-ac padd-l">';
+					imgHtmls +='<span class="fa fa-photo font3"></span>';
+					imgHtmls +='<span class="padd-l">' + imgObj.imgcount + '</span>';
+					imgHtmls +='</div>';
+					imgHtmls +='</div>';
+					$("#imgDiv-js").append(imgHtmls);
+	                $("#"+imgObj._id).css("background-image", 'url("' + imgObj.img + '")');
+	            }
+	            $('.imgInfo-js').button(function(btn){
+	            	app.storage.set("newsImgId",btn.id);
+	            	 var win = app.createWindow();
+	            	 win.open('picDetail.html');
+	            })	
+        	}
+            $hideProgress();
+        });
+    }
+</script>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+	    <meta name="viewport" content="width=device-width,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,initial-scale=1.0">
+	    <title></title>
+	    <link rel="stylesheet" type="text/css" href="../common/css/common.css"/>
+	    <link rel="stylesheet" type="text/css" href="../common/css/box.css"/>
+	    <link rel="stylesheet" type="text/css" href="../common/css/color.css"/>
+	    <link rel="stylesheet" type="text/css" href="../common/css/media.css"/>
+	    <link rel="stylesheet" type="text/css" href="css/new_file.css"/>
+	</head>
+	<body>
+		<div id="all" class="container box box-ov">
+		    <div id="header" class="c-wh box box-s c-307" style="height:3em;">
+		        <div id="close" class="mwh4-2 box box-ac box-pc t-wh">
+		            <div class="prize-icon bg-img"></div>
+		        </div>
+		        <div class="box-f1 tx-c padd-h t-wh font0">注册</div>
+		        <div class="mwh4-2 box box-ac box-pc">
+		
+		        </div>
+		    </div>
+		    <div id="content" class="box-f1">
+		    	
+		    </div>
+		</div>
+	</body>
+<script src="../common/co/native.js"></script>
+<script src="../common/co/dom.js"></script>
+<script src="../common/co/co.js"></script>
+<script src="../common/js/app.js"></script>
+<script>
+	var view = app.currentView()
+    domReady(function(require){
+    	$('#close').button(function(){
+        	view.back()
+        })
+        view.setBgcolor('#a4a4a4');
+        view.enableKeyboard()
+        app.disableSlideBack()
+    	var titleH = $('#header').height();
+        
+        var regiest = view.createPopover(0,titleH,0,0);
+        regiest.open('regiest_content.html')
+	})
+</script>
+</html>

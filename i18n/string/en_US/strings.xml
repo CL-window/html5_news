@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello %s%s</string>
+    <string name="app_name">AppName</string>
+    <string name="title_activity_main">This is tltle</string>
+    <string name="hello_world">Hello world!</string>
+</resources>

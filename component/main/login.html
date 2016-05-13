@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+	    <meta name="viewport" content="width=device-width,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,initial-scale=1.0">
+	    <title></title>
+	    <link rel="stylesheet" type="text/css" href="../common/css/common.css"/>
+	    <link rel="stylesheet" type="text/css" href="../common/css/box.css"/>
+	    <link rel="stylesheet" type="text/css" href="../common/css/color.css"/>
+	    <link rel="stylesheet" type="text/css" href="../common/css/media.css"/>
+	    <link rel="stylesheet" type="text/css" href="css/new_file.css"/>
+	    <style>
+	    </style>
+	</head>
+	<body>
+		<div id="all" class="container box box-ov">
+		    <div id="header" class="c-wh box box-s c-307" style="height:3em;">
+		        <div id="close" class="mwh4-2 box box-ac box-pc t-wh">
+		            <div class="prize-icon bg-img"></div>
+		        </div>
+		        <div class="box-f1 tx-c padd-h t-wh font0">登录</div>
+		        <div class="mwh4-2 box box-ac box-pc">
+		
+		        </div>
+		    </div>
+		    <div id="content" class="box-f1 c-wh font0">
+		    	<div class="box box-ov box-pc mar-a1">
+		    		<div class="br-a box-s box box-ov mar-t-2">
+		    			<div class="b-d2d box box-ac box-pc padd-a">
+							<div class="user bg-img"></div>
+							<div class="uinput box-f1 mar-l">
+					        	<input id="userCode" type="tel" autofocus="autofocus" placeholder="请输入手机号" maxlength="11"/>
+					        </div>
+						</div>
+						<div class="box box-ac box-pc padd-a">
+							<div class="pwd bg-img"></div>
+							<div class="uinput box-f1 mar-l">
+					        	<input id="passwd" type="password" placeholder="密码" maxlength="12"/>
+					        </div>
+						</div>
+		    		</div>
+		    		<div class="t-gra box box-pe mar-t-05 mar-b-1">
+		    			<span onclick="fincPwd()" >忘记密码？</span>	
+		    		</div>   
+		    		<div onclick="goLogin()" class="padd-btn btn c-1d8 t-wh tx-c br-a mar-t mar-b">登录</div>
+		    		<div onclick="goRegiest()" class="padd-btn btn c-0ab t-wh tx-c br-a mar-t mar-b">注册</div>
+		    	</div>
+		    </div>
+		</div>
+	</body>
+<script src="../common/co/native.js"></script>
+<script src="../common/co/dom.js"></script>
+<script src="../common/co/co.js"></script>
+<script src="../common/js/app.js"></script>
+<script src="js/config.js"></script>
+<script src="js/custom.js"></script>
+<!--<script src="js/jquery.js"></script>-->
+<script>
+    var view = app.currentView();
+	domReady(function(require){
+		app.disableSlideBack();
+		app.storage.remove('passwd');
+		app.lockRotate();
+		getHeader();
+        $('#close').button(function(){
+        	view.back()
+        })
+        shuaXin("1");
+    });
+    
+    //登录
+    function goLogin(){
+    	var userCode = $("#userCode").val();
+    	var passwd = $("#passwd").val();
+    	if(userCode.length == 0){
+			app.alert('请输入手机号');
+			return;
+		}
+		var phone=/^(13[0-9]|147|15[012356789]|17[0-9]|18[02356789])[0-9]{8}$/;
+		if(!phone.test(userCode)){
+			app.alert('请输入正确的手机号');
+			return;
+		}
+		if(passwd.length == 0){
+			app.alert('请输入密码');
+			return;
+		}
+		if(passwd.length < 6){
+			app.alert('密码至少六位');
+			return;
+		}
+		//登录访问服务器
+
+		var _userObj = new _dt.Auth.User();
+    	_userObj.login(userCode,passwd,
+    	function(err){
+    		app.alert(JSON.stringify(err));
+        },function(data){
+			app.event.sendEvent('nickname', {key: data.nname});
+			app.event.sendEvent('userHeaderImgPath', {key: data.headimg});
+			app.storage.set('user',data);
+			app.storage.set('userId',data._id);
+			app.storage.set('userNname',data.nname);
+			app.storage.set('userHeaderImgPath',data.headimg);
+			app.storage.set('appSession',data.session);
+			app.storage.remove('userTel');
+        	if(data.headimg == "" || data.headimg == null){
+	 			app.alert("请设置头像");
+				setTimeout(function(){
+					var win = app.createWindow();
+					win.open("mySet.html","mySet");
+				},1000);
+	 		}
+			app.evalScriptInPop("loadingUserInfo()", 'my_content.html', 'root');	 		
+        	setTimeout(function(){
+				view.back();
+			},1000);
+        });	
+    }
+    
+    //注册
+    function goRegiest(){
+    	var win = app.createWindow();
+	    win.open('regiest.html');
+    }
+    
+    //找回密码
+    function fincPwd(){
+    	var win = app.createWindow();
+	    win.open('findPwd.html');
+    }
+    
+    //刷新登录 
+    function shuaXin(type){
+    	var userTel = app.storage.get('userTel');
+    	var userPwd = app.storage.get('userPwd');
+    	if(userTel){
+    		$("#userCode").val(userTel);
+    	}
+    	if(userPwd && type=='1'){
+    		$("#passwd").val(userPwd);
+    	}else{
+    		$("#passwd").val('');
+    	}
+    }
+</script>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../common/co/css/co.css">
+    <link rel="stylesheet" type="text/css" href="../common/css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="../common/css/box.css"/>
+    <link rel="stylesheet" type="text/css" href="../common/css/color.css"/>
+    <link rel="stylesheet" type="text/css" href="../common/css/media.css"/>
+    <link rel="stylesheet" type="text/css" href="css/new_file.css"/>
+</head>
+<body>
+<div id="all" class="container box box-ov">
+    <div id="header" class="c-wh box box-s c-bla" style="height:3em;">
+        <div onclick="closeWindow()" class="mwh4-2 box box-ac box-pc t-wh">
+            <div class="prize-icon bg-img"></div>
+        </div>
+        <div class="box-f1 tx-c padd-h t-wh font0">　</div>
+        <div class="mwh4-2 box box-ac box-pc">
+
+        </div>
+    </div>
+    <div id="content" class="box-f1 c-bla">
+    	
+    </div>
+    <div id="footer" class="footerBtn box box-s box-pe font0 b-0a0 c-bla padd-a">
+        <div onclick="downloadImg()" class="down bg-img mar-r"></div>
+        <div onclick="commentNews()" class="write bg-img mar-l-l"></div>
+        <div onclick="collectNews()" id="saveTo" class="star1 bg-img mar-l-l"></div>
+    </div>
+</div>
+<div id="mask-layer" class="mask-layer">
+</div>
+</body>
+<script src="../common/co/native.js"></script>
+<script src="../common/co/dom.js"></script>
+<script src="../common/co/co.js"></script>
+<script src="../common/js/app.js"></script>
+<script src="js/config.js"></script>
+<script src="js/custom.js"></script>
+<script>
+    var _collection;
+    var imgCollectionId;
+    var imgNewsInfoId;
+    var _imgnews,_collection,netFlag;
+    var view = app.currentView();
+    domReady(function(require){
+    	$showProgress("加载中...");
+    	view.disableVScrollBar();
+    	view.setBgcolor('#000000');
+    	view.disableHScrollBar();
+	    if($.os.ios){
+			app.setStatusBarBackgroundColor('#000000');
+		}
+		getHeader();
+   		_imgnews = new _dt.DB.Tab("imgnews");
+		_collection = new _dt.DB.Tab("collection");
+   		imgNewsInfoId = app.storage.get("newsImgId");
+   		imgCollectionId = app.storage.get("picCollectionId");
+	    if($.os.ios){
+	    	app.disableSlideBack();
+    	}
+	    loadData();//加载数据
+		var titleH = $('#header').height();
+    	var contentH  = $('#content').height();
+    	var detail = view.createPopover(0,titleH,0,contentH);
+    	detail.open('picDetail_content.html')
+	})
+	//加载数据
+	function loadData(){
+		var _option = {
+            page:1
+            ,size:10
+            ,include:{"imgnews":"title,brief,img"}
+            ,where:{
+                type: "imgnew",
+                _euser: app.storage.get('userId')
+            }
+            ,order:[["_edtm",0]]
+        };
+        _collection.getListData(_option,function(err){
+//          $alert(err);
+        },function(data){
+        	for(var i=0;i<data.data.length;i++){
+	        	if(imgNewsInfoId == data.data[i].imgnews._id){
+	        		$("#saveTo").removeClass('star1');
+					$("#saveTo").addClass('star');
+					imgCollectionId = data.data[i]._id;
+	        	}
+        	}
+        });
+	}
+
+	function closeWindow(){
+		if($.os.ios){
+	    	app.setStatusBarBackgroundColor('#307ab3');
+    	}
+    	view.back();
+	}
+	//下载图片
+	function downloadImg(){
+		$showProgress("保存中...");
+		setTimeout(function(){
+			$hideProgress();
+		},10000);
+		var imgPath = app.storage.get("imgNewsNowImgPath");//获取图片地址
+		var imgName = imgPath.substr(imgPath.lastIndexOf('/')+1,imgPath.length);
+		var localSavePath = 'cache://'+imgName;//本地下载地址
+		//图片下载调取插件
+		var option = {method:'GET',timeout:60,retry:3,filePath:localSavePath};
+		var dtask = app.downloader.createDownload(imgPath,option);//建立下载任务
+		//监听下载进度
+		if(dtask.state == 4){
+			$hideProgress();
+			app.alert("此图片已保存");
+			return;
+		}
+		dtask.addCompletedListener(function(download, status){
+			rd.gallery.save(
+	           localSavePath,
+	           function(path){
+           			$hideProgress();
+           			setTimeout(function(){
+	       				app.alert("保存成功");
+					},500);
+	           },
+	           function(e){
+	           		app.alert(e);
+	         });
+		});
+		dtask.start();//开始下载
+	}
+	
+	//评论新闻
+	function commentNews(){
+		var userId = app.storage.get('userId');
+		app.storage.set('htmlName','pic');
+		if(userId){
+			var win = app.createWindow();
+   			win.open('commentNews.html');
+		}else{
+			app.alert('请先登录再来评论吧！')
+		}
+		
+	}
+	
+	//收藏新闻
+	var isClick = false;
+	function collectNews(){
+		var userId = app.storage.get('userId');
+		var userNname = app.storage.get('userNname');
+		if(!userId && !userNname){
+			app.alert('登录后才可以收藏哦！');
+			return;
+		}
+		if(isClick){
+			return;
+		}
+		isClick = true;
+		var saveTo = $("#saveTo")
+		if(saveTo.hasClass('star1')){
+	        var _new ={
+	            type:"imgnew",
+	            imgnews:imgNewsInfoId
+	        };
+	        _collection.creatData(_new,
+	        function(err){
+	        },function(data){
+	        	imgCollectionId = data;
+	            app.alert("收藏成功");
+				isClick = false;
+	            saveTo.removeClass('star1');
+				saveTo.addClass('star');
+	        });
+		}else{
+			_collection.delData(imgCollectionId,
+			function(err){
+	        },function(data){
+	        	app.alert("取消收藏");
+				isClick = false;
+	            saveTo.removeClass('star');
+				saveTo.addClass('star1');
+	        });
+		}
+		app.evalScriptInPop("setDataLists(1)", "savePic", "mySave");
+	}
+</script>
+</html>

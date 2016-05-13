@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../common/css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="../common/css/box.css"/>
+    <link rel="stylesheet" type="text/css" href="../common/css/color.css"/>
+    <link rel="stylesheet" type="text/css" href="../common/co/css/co.css" />
+    <link rel="stylesheet" type="text/css" href="../common/css/media.css"/>
+    <link rel="stylesheet" type="text/css" href="css/new_file.css"/>
+</head>
+<body >
+	<div class="box box-ov">
+	    
+	</div>
+	    
+</body>
+<script src="../common/co/native.js"></script>
+<script src="../common/co/dom.js"></script>
+<script src="../common/co/co.js"></script>
+<script src="../common/js/app.js"></script>
+<script>
+    
+    var  dataSources;
+    
+    domReady(function(require){
+    	contentHeight = app.storage.get("contentHeight");
+    	// tabMark 在整篇文档中,此对象只创建一次. 请不要重复创建.
+	   	var  tabmark  = app.require("tabMark");
+	   	setDataSource();
+	    tabmark.setDataSource(dataSources);
+	   // setFrame(x, y, width, height) 
+	    tabmark.setFrame(0,0,app.currentView().getWidth(),contentHeight);
+	    
+		//为适配安卓手机，需加忽略手势 android手机都出不来tabmark
+//     	if($.os.android){
+//         	var IgnoreParams = {
+//	            x:0,
+//	            y:0,
+//	            width:app.currentView().getWidth(),
+//	            height:208
+//	        };
+//			tabMark.addIgnoreArea('头条',IgnoreParams);
+//			tabMark.addIgnoreArea('科技',IgnoreParams);
+//			tabMark.addIgnoreArea('体育',IgnoreParams);
+//			tabMark.addIgnoreArea('社会',IgnoreParams);
+//			tabMark.addIgnoreArea('财经',IgnoreParams);
+//			tabMark.addIgnoreArea('汽车',IgnoreParams);
+//			tabMark.addIgnoreArea('时尚',IgnoreParams);
+//			tabMark.addIgnoreArea('历史',IgnoreParams);
+//		}
+	    
+	    tabmark.show();
+	   
+	   
+	    
+	   
+    });
+    function setDataSource(){
+    	dataSources = {
+	       titleFont:12.0, //文字大小
+	       titleHighlightFont:15.0,//文字高亮大小
+	       titleColor:"#009ACD",//文字颜色
+	       titleHighlightColor:"#CD8500",//文字高亮颜色
+	       vernierColor:"#00E5EE",//游标颜色
+	       naviBgColor:"#ffffff",//导航条背景色
+	       btnHeight:36.0,//导航条(按钮)高度
+	       manyBtn:false,//true:多按钮模式(自适应按钮宽度)  false:自动等距分割
+	       EditButtonImg:"abc.png",//编辑按钮图片
+	       interval: true, //分割线，android不支持
+	       naviHidden:false, //是否隐藏导航条
+	       defaultIndex:1,//默认开启的页面 
+	       dataSource:[
+	       		{
+	                menu:'头条',
+	                url:"news_first.html"
+	            },
+	            {
+	                menu:'科技',
+	                url:"news_technology.html"
+	            },
+	            {
+	                menu:'体育',
+	                url:'news_sports.html'
+	            },
+	            {
+	                menu:'社会',
+	                url:'news_sociology.html',
+	            },
+	            {
+	                menu:'财经',
+	                url:'news_finance.html'
+	            },
+	            {
+	                menu:'汽车',
+	                url:'news_car.html'
+	            },
+	            {
+	                menu:'时尚',
+	                url:'news_fashion.html'
+	            },
+	            {
+	                menu:'历史',
+	                url:'news_history.html'
+	            }
+	       ]
+	   }
+    };
+     
+</script>
+</html>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<application id="729961646046576640">
+  <name>News_slack</name>
+  <description>新闻客户端</description>
+  <author>
+    <name>名字</name>
+    <email>邮箱</email>
+    <tel>电话</tel>
+    <address>永嘉北路6号</address>
+  </author>
+  <license url=""/>
+  <version>01.00.000</version>
+  <autoUpdate>true</autoUpdate>
+  <entry>main</entry>
+  <bgcolor>#FFFFFF</bgcolor>
+  <appkey>key</appkey>
+  <logServer>192.168.3.4</logServer>
+  <logPort>40050</logPort>
+</application>

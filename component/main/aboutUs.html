@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	    <meta charset="utf-8" />
+	    <meta name="viewport" content="width=device-width,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,initial-scale=1.0">
+	    <title></title>
+	    <link rel="stylesheet" type="text/css" href="../common/css/common.css"/>
+	    <link rel="stylesheet" type="text/css" href="../common/css/box.css"/>
+	    <link rel="stylesheet" type="text/css" href="../common/css/color.css"/>
+	    <link rel="stylesheet" type="text/css" href="../common/css/media.css"/>
+    	<link rel="stylesheet" type="text/css" href="../common/co/css/co.css" />
+	    <link rel="stylesheet" type="text/css" href="css/new_file.css"/>
+	</head>
+	<body>
+		<div id="all" class="container box box-ov">
+		    <div id="header" class="c-wh box box-s c-307" style="height:3em;">
+		        <div id="close" class="mwh4-2 box box-ac box-pc t-wh">
+		            <span class="fa fa-angle-left fa-2x"></span>
+		        </div>
+		        <div class="box-f1 tx-c padd-h t-wh font2">关于</div>
+		        <div class="mwh4-2 box box-ac box-pc">
+		        </div>
+		    </div>
+			<div id="content" class="box box-f1">
+				<div class="bg-about bg-img4 container box box-ov box-ac">
+					<div class="about-img2 bg-img mar-t6-b2"></div>
+					<div class="mar-b font2">HTML5_android新闻客户端</div>
+					<div class="mar-t font2">slack</div>
+					<div class="mar-t-15 font3">V1.0.0</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script src="../common/co/native.js"></script>
+	<script src="../common/co/dom.js"></script>
+	<script src="../common/co/co.js"></script>
+	<script src="../common/js/app.js"></script>
+	<script>
+	    	var view = app.currentView();
+			domReady(function(require){
+				app.disableSlideBack();
+		        $('#close').button(function(el){
+		        	view.back();
+		        })
+			});
+	</script>
+</html>

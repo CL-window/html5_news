@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configs>
+    <!--<config pluginName="ShareSDK">
+
+        <ios>
+
+            <param key="Scheme" value="wb568898243"></param>
+
+            <param key="Scheme" value="wb801307650"></param>
+
+            <param key="Scheme" value="tencent100371282"></param>
+
+            <param key="Scheme" value="QQ05FB8B52"></param>
+
+            <param key="Scheme" value="wx4868b35061f87885"></param>
+
+            <param key="Scheme" value="rm226427com.369Cloud.app"></param>
+
+        </ios>
+
+        <android>
+
+        </android>
+
+    </config>-->
+     <config pluginName="qq">
+        <ios>
+            <param key="Scheme" value="tencent100371282"></param>
+            <param key="Scheme" value="QQ05FB8B52"></param>
+        </ios>
+        <android>
+        </android>
+    </config>
+    <config pluginName="aliPay">
+        <ios>
+            <param key="Scheme" value="aliPay369Cloud"></param>
+        </ios>
+        <android>
+        </android>
+    </config>
+
+    <config pluginName="JPush">
+        <ios>
+            <param key="JPUSH_CHANNEL" value="channel01"></param>
+            <param key="JPUSH_APPKEY" value="c311041fd830c7a96bdff205"></param>
+            <param key="APS_FOR_PRODUCTION" value="1"></param>
+        </ios>
+        <android>
+            <param key="JPUSH_APPKEY_VALUE" value="f74048f0bf5200dde3ca89bd"></param>
+            <param key="JPUSH_CHANNEL_VALUE" value="xiaomishichang"></param>
+        </android>
+    </config>
+    
+    <config pluginName="sinaWeibo">
+        <ios>
+            <param key="sinaWeibo_AppKey" value="2128286673"></param>
+            <param key="sinaWeibo_redirectURI" value="http://www.sina.com"></param>
+            <param key="sinaWeibo_urlScheme" value="wb2128286673"></param>
+        </ios>
+        <android>
+            <param key="sinaWeibo_AppKey" value="3112480022"></param>
+            <param key="sinaWeibo_redirectURI" value="https://api.weibo.com/oauth2/default.html"></param>
+        </android>
+	</config>
+	
+    <config pluginName="baiduLocation">
+        <ios>
+            <param key="BDLOCATION_APIKEY_iOS" value="NjKf72NiCHa2csbUOg1Ku8it"></param>
+            <param key="WhenInUseUsageDescription" value="应用程序向您申请定位授权"></param>
+            <param key="AlwaysUsageDescription" value="应用程序向您申请定位授权"></param>
+        </ios>
+        <android>
+            <param key="BDLOCATION_APIKEY_ANDROID" value="f74048f0bf5200dde3ca89bd"></param>
+        </android>
+    </config>
+    <config pluginName="wechat">
+        <ios>
+            <param key="Scheme" value="wxd930ea5d5a258f4f"></param>
+        </ios>
+        <android>
+        </android>
+    </config>
+</configs>

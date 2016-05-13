@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../common/css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="../common/css/box.css"/>
+    <link rel="stylesheet" type="text/css" href="../common/css/color.css"/>
+    <link rel="stylesheet" type="text/css" href="../common/co/css/co.css" />
+    <link rel="stylesheet" type="text/css" href="../common/css/media.css"/>
+    <link rel="stylesheet" type="text/css" href="css/new_file.css"/>
+</head>
+<body class="c-wh">
+	<div class="box box-ov body-js">
+		<div id="slider" class="ui-slider box-f1 mar-b" style="height:13em;">
+            <div id="slider-js" class="ui-slider-group">
+                
+            </div>
+    	</div>
+    	<div id="dataBody-js" class="box box-ov">
+    		
+    	</div>
+	</div>
+</body>
+<script src="../common/co/native.js"></script>
+<script src="../common/co/dom.js"></script>
+<script src="../common/co/co.js"></script>
+<script src="../common/js/app.js"></script>
+<script src="js/config.js"></script>
+<script src="js/custom.js"></script>
+<script>
+	domReady(function(require){
+		var whereJson= {type:"fashion"}; //新闻查询条件
+		headerRefreshing(whereJson);
+		footerRefreshing(whereJson);
+		//请求新闻列表
+		getNewsListData(whereJson);
+	});
+</script>
+</html>

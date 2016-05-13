@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../common/css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="../common/css/box.css"/>
+    <link rel="stylesheet" type="text/css" href="../common/css/color.css"/>
+    <link rel="stylesheet" href="../common/co/css/co.css">
+    <link rel="stylesheet" type="text/css" href="css/new_file.css"/>
+</head>
+<body>
+<div id="all" class="container box box-ov">
+    <div id="header" class="c-wh box c-307 box-ac box-pc" style="height:3em;">
+        <div id="titleName" class="box-f1 tx-c t-wh font2">新闻</div>
+    </div>
+    <div id="content" class="box-f1 c-wh">
+    
+    </div>
+    <div id="footer" class="box box-s box-pc c-wh t-gra">
+        <div id="news" class="footerBtn box box-f1 box-ac box-pc padd-tb t-307">
+            <span class="fa fa-newspaper-o font2"></span>
+            <span class="padd-l font1">新闻</span>
+        </div>
+        <div id="pic" class="footerBtn box box-f1 box-ac box-pc padd-tb">
+            <span class="fa fa-photo font2"></span>
+            <span class="padd-l font1">图集</span>
+        </div>
+        <div id="my" class="footerBtn box box-f1 box-ac box-pc padd-tb ">
+            <span class="fa fa-user font2"></span>
+            <span class="padd-l font1">我的</span>
+        </div>
+    </div>
+</div>
+</body>
+<script src="../common/co/native.js"></script>
+<script src="../common/co/dom.js"></script>
+<script src="../common/co/co.js"></script>
+
+<script>
+    // 创建一个view对象很简单，只需通过app的currentView方法即可。
+	var view = app.currentView();
+	domReady(function(require){
+		
+		app.lockRotate(true);
+    	if($.os.ios){
+	    	app.setStatusBarBackgroundColor('#307ab3');
+    		app.statusBarFontColor(1);
+    	}
+		
+		var y = $('#header').height();// y 轴
+//		var height = view.getHeight()-y-$('#footer').height();//content高度
+		var height = $('#content').height();
+//		console.log(height);
+		var news = view.createPopover(0,y,0,height);// createPopover
+		var albums = view.createPopover(0,y,0,height);
+		var my = view.createPopover(0,y,0,height);
+		news.open("news_content.html");
+//		news.open("news_first.html");
+		//设置全局变量，存储 content 高度
+		app.storage.set("contentHeight", height);
+		//footerBtn 点击事件
+		$('.footerBtn').button(function(evt){
+//			alert(111);
+			var page = $(evt).attr('id');
+			// 字体变色
+			$('.footerBtn').removeClass("t-307");
+			$('#' + page).addClass("t-307");// '#'+page 转型 id
+			if(page == "news"){
+				$('#titleName').html("新闻");//设置header 文字内容
+				news.open("news_content.html");
+			}else if(page == "pic"){
+				$('#titleName').html("图集");
+				albums.open("pic_content.html");
+			}else if(page == "my"){
+				$('#titleName').html("个人主页");
+				albums.open("my_content.html");
+			}
+		});
+		
+		
+		   
+	});
+	
+</script>
+</html>

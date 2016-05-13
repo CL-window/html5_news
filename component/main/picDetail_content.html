@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html class="wid hei">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../common/css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="../common/css/box.css"/>
+    <link rel="stylesheet" type="text/css" href="../common/css/color.css"/>
+    <link rel="stylesheet" type="text/css" href="../common/co/css/co.css" />
+    <link rel="stylesheet" type="text/css" href="../common/css/media.css"/>
+    <link rel="stylesheet" type="text/css" href="css/new_file.css"/>
+</head>
+<body class="c-bla">
+    <div class="box box-ac box-pc hei wid omit">
+	<div class="box box-ov wid">
+		<div id="slider" class="ui-slider box-f1" style="height:14em;">
+            <div class="ui-slider-group">
+            </div>
+    	</div>
+    	<div id="con-js" class="mar-a box box-ov">
+		</div>
+	</div>
+</body>
+<script src="../common/co/native.js"></script>
+<script src="../common/co/dom.js"></script>
+<script src="../common/co/co.js"></script>
+<script src="../common/js/app.js"></script>
+<script src="js/config.js"></script>
+<script src="js/custom.js"></script>
+<script>
+    var conObj = new Array();
+    var view = app.currentView();
+	domReady(function(require){
+		app.disableSlideBack();
+		view.disableVScrollBar();
+    	view.setBgcolor('#000000');
+    	view.disableHScrollBar();
+        setImgInfos();
+	});
+	//向页面中添加动态数据
+	function setImgInfos(){
+		getHeader();
+		var _imgnews = new _dt.DB.Tab("imgnews");
+		var imgNewsId = app.storage.get("newsImgId");
+		 _imgnews.getData(imgNewsId,function(err){
+           app.alert("网络连接超时");
+           $hideProgress();
+        },function(data){
+        	if(data){
+        		$hideProgress();
+				var dateTime = getTimes(data._edtm,true,4);
+				app.storage.set('newsImgPath', data.img);
+				app.storage.set('newsTitle', data.title);
+				app.storage.set("imgNewsNowImgPath",data.body[0].img);//向缓存中添加第一张图片
+				for(var i in data.body){
+					var imgInfo = data.body[i];
+					//将新闻信息放入数组中
+					conObj[i]={};
+					conObj[i].title = data.title?data.title:'';
+					conObj[i].time = dateTime?dateTime:'';
+					conObj[i].imgPath = imgInfo.img?imgInfo.img:'';
+					conObj[i].content = imgInfo.txt?imgInfo.txt:'';	
+					//拼装轮播图的信息		
+					var htmls = '';
+					var nowImg = parseInt(i)+1;
+					htmls += '<div class="ui-slider-item box box-ov c-000 t-wh wid">';
+                	htmls += '<div id="imgBg_'+i+'" class="ui-slider-img banner bg-img1" style="height:13em !important;">';
+                	htmls += '</div>';
+					htmls +='<div class="box box-f1 wid box-pe">'+nowImg+'/'+data.imgcount+'</div>';
+                	htmls += '</div>';
+                	$(".ui-slider-group").append(htmls);
+					$("#imgBg_"+i).css("background-image", 'url("' + imgInfo.img + '")');
+				}
+			}
+			//新闻详情的切换信息拼装
+			var con = $('#con-js');
+			var conHtml = '<div class="t-wh">'+conObj[0].title+'</div>'
+	    			+'<div class="t-gra font-1 mar-t">'+conObj[0].time+'</div>'
+	    			+'<div class="hei-a6 t-gra mar-t" style="overflow-y:auto;">'+conObj[0].content+'</div>';
+			con.html(conHtml);
+			$('#slider').on('slideend',function(e,index){
+	        	var str = '<div class="t-wh mar-t" style="margin:0;">'+conObj[index].title+'</div>'
+	    			+'<div class="t-gra font-1 mar-t mar-b">'+conObj[index].time+'</div>'
+	    			+'<div class="hei-a6 t-gra mar-t" style="overflow-y:auto;height:4.5em;">'+conObj[index].content+'</div>';
+	        	con.html(str);
+	        })
+	        //图片轮播
+			$('#slider').slider( { 
+	            loop:false,
+	            autoPlay:false,
+	            speed:100,
+	            mulViewNum:1
+	        }).ref.on('slideend',function(e,index){
+	        	//当前显示的图片地址
+				app.storage.set("imgNewsNowImgPath",conObj[index].imgPath);
+	        }).on('moveend',function(e,index,dir){
+				 
+	        });
+        });
+	}
+</script>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../common/css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="../common/css/box.css"/>
+    <link rel="stylesheet" type="text/css" href="../common/css/color.css"/>
+    <link rel="stylesheet" type="text/css" href="../common/css/media.css"/>
+    <link rel="stylesheet" type="text/css" href="css/new_file.css"/>
+</head>
+<body>
+<div id="all" class="container box box-ov">
+    <div id="header" class="box" style="z-index:10;">
+        <div onclick="closeInfo()" class="mwh4-2 box box-ac box-pc t-wh">
+            <div class="prize-icon bg-img"></div>
+        </div>
+        <div class="box-f1 tx-c padd-h t-wh font0">个人设置</div>
+        <div class="mwh4-2 box box-ac box-pc">
+
+        </div>
+    </div>
+    <div id="content" class="box-f1 c-e4e" style="margin-top:-4em;">
+    	 <div class="box box-ov container hei">
+            <div onclick="changePhoto()" class="c-307 box box-ov box-ac box-pc">
+            	<div class="myPhoto bg-img padd-a mar-a3 br-50"></div>
+            	<div class=" br-a3 t-wh font-1 padd-a" style="line-height: 2em;">更改头像</div>
+            </div>
+            <div class="mar-a2 box box-ac c-wh padd-a">
+            	<div class="padd-a">修改昵称：</div>
+            	<div class="uinput box-f1 mar-l">
+            		<input id="nickName" maxlength="7" type="text" placeholder=""/>
+            	</div>
+            </div>
+            <div onclick="submitSave()" class="btn padd-btn t-wh c-fc5 tx-c mar-t">保存修改</div>
+         </div>
+    </div>
+</div>
+</body>
+<script src="../common/co/native.js"></script>
+<script src="../common/co/dom.js"></script>
+<script src="../common/co/co.js"></script>
+<script src="../common/js/app.js"></script>
+<script src="js/config.js"></script>
+<script src="js/custom.js"></script>
+<script>
+    var imgSavePath;
+    var imageCompressorObj;
+	var _userObj;
+    var userId;
+    var headerImg;
+    var userNackName;
+    var view = app.currentView();
+    domReady(function(require){
+    	if(app.os.getName() != "Android"){
+    		app.disableSlideBack();
+    	}
+    	imageCompressorObj = rd.imageCompressor;
+    	getHeader();
+    	headerImg = app.storage.get('userHeaderImgPath');
+    	userNackName = app.storage.get('userNname');
+    	if(headerImg){
+    		$('.myPhoto').css('background','url("'+headerImg+'")');
+      		$('.myPhoto').css('background-size','100% 100%');
+    	}
+      	_userObj = new _dt.Auth.User();
+    	userId = app.storage.get('userId');
+    })
+   //更改头像
+	function changePhoto(){
+//		app.alert(11);
+		rd.imageTailor.open(imageTailorSuccessCallBack,imageTailorErrorCallBack,'please crop your image',true);
+	}
+	
+	//图片裁剪成功回调
+	function imageTailorSuccessCallBack(path){
+//			app.alert(path);
+      	// 图片压缩
+    	var pathFolder = path.substring(0,path.lastIndexOf('/')+1);
+    	var pathName = path.substring(path.lastIndexOf('/')+1,path.lastIndexOf('.'));
+    	var pathFormat = path.substring(path.lastIndexOf('.'));
+    	var savedPath = pathFolder + pathName + '_compression'+ pathFormat;
+    	myimgSrc = path;
+    	imgSavePath = savedPath;
+    	imageCompressor(path,savedPath);//图片压缩
+    }
+	
+	//图片裁剪失败回调
+	function imageTailorErrorCallBack(err){
+		app.alert(err);
+    }
+    
+    //图片大小压缩
+    function imageCompressor(imgSrc,savedPath){
+        var options = {type : 0,
+                        size : 50 * 1024
+                       };
+        rd.imageCompressor.compress(imgSrc, savedPath, options, imageCompressorSuccessCallBack);
+    }
+    
+    //图片大小压缩成功回调
+    function imageCompressorSuccessCallBack(ret){
+        if (ret == imageCompressorObj.SUCCESS) {
+			rd.imageTools.toBase64(imgSavePath, base64Callback); //图片base64压缩
+        } else {
+            app.alert('图片压缩失败，请重新上传');
+        } 
+    }
+    
+    //图片base64压缩
+    function base64Callback (ret, base64) {
+		switch(ret){
+			case 0:
+	            imageUpload(base64);
+            	break;
+        	case 1:
+        		app.alert("操作失败");
+        		break;
+        	case 2:
+        		app.alert("内存溢出");
+        		break;
+    		case 3:
+    			app.alert("图片太大");
+    			break;
+			default:
+				app.alert(ret);
+				break;
+		}
+	}
+	
+    //图片上传至服务器
+    function imageUpload(base64){
+		var _dbImg = new _dt.Img();
+        var imgObj = {
+            base:base64,
+            type:"jpg"
+        };
+        _dbImg.putImgByBase64(imgObj,function(err){
+        },function(data){
+        	updataImg(data);
+        });
+    	
+    }
+    
+    //保存修改头像信息
+    function updataImg(imgPath){
+    	var _obj= {
+            _id:userId,
+            headimg:imgPath
+        };
+        _userObj.editUser(_obj,function(err){
+        },function(data){
+            if(data){
+            	app.event.sendEvent('userHeaderImgPath',{key:imgPath});
+            	$('.myPhoto').css('background','url("'+imgPath+'")');
+      			$('.myPhoto').css('background-size','100% 100%');
+            	app.storage.set('userHeaderImgPath',imgPath);
+            	headerImg = imgPath;
+            }else{
+            	app.alert("修改失败，请重新修改！");          	
+            }
+            
+        });
+    }
+    //保存昵称
+    function submitSave(){  	
+    	var nickName = $("#nickName").val().replace(/\s*/g, '');
+    	if(nickName == "" || nickName == userNackName){
+    		app.alert("修改成功");
+    		view.back();
+    		return;
+    	}
+    	var _obj= {
+            _id:userId,
+            nname:nickName ==""?userNackName:nickName
+        };
+        _userObj.editUser(_obj,function(err){
+            app.alert(err);
+        },function(data){
+            if(data){
+            	if(nickName != "" && nickName != null){
+	            	app.storage.set('userNname',nickName);
+	            	app.event.sendEvent('nickname',{key:nickName});
+            	}
+            	userNackName = nickName;
+            	app.alert("修改成功！");
+            	closeInfo();
+            }else{
+            	app.alert("修改失败，请重新修改！");
+            }
+        });
+    }
+    
+    
+    //关闭当前页面并刷新我的用户信息
+    function closeInfo(){
+    	setTimeout(function(){
+	       view.back()
+    	},500);
+    }
+</script>
+</html>

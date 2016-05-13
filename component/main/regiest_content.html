@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+	    <meta name="viewport" content="width=device-width,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,initial-scale=1.0">
+	    <title></title>
+	    <link rel="stylesheet" type="text/css" href="../common/css/common.css"/>
+	    <link rel="stylesheet" type="text/css" href="../common/css/box.css"/>
+	    <link rel="stylesheet" type="text/css" href="../common/css/color.css"/>
+	    <link rel="stylesheet" type="text/css" href="../common/css/media.css"/>
+	    <link rel="stylesheet" type="text/css" href="css/new_file.css"/>
+	</head>
+	<body class="c-e4e">
+		<div class="box box-ov box-pc mar-a1">
+    		<div class="b-d2dA br-a box box-ov mar-a2 c-wh">
+    			<div class="b-d2d box box-ac box-pc padd-a">
+					<div class="phone bg-img"></div>
+					<div class="uinput box-f1 mar-l">
+			        	<input id="phone" type="tel" placeholder="手机号" maxlength="11"/>
+			        </div>
+			        <div id="getVerify" onclick="getWord()" class="btn padd-a">获取验证码</div>
+				</div>
+				<div class="b-d2d box box-ac box-pc padd-a">
+					<div class="message bg-img"></div>
+					<div class="uinput box-f1 mar-l">
+			        	<input id="verifyCode" type="text" placeholder="验证码" maxlength="6"/>
+			        </div>
+				</div>
+				<div class="b-d2d box box-ac box-pc padd-a">
+					<div class="pwd1 bg-img"></div>
+					<div class="uinput box-f1 mar-l">
+			        	<input id="passwd" type="password" placeholder="密码" maxlength="12"/>
+			        </div>
+				</div>
+				<div class="b-d2d box box-ac box-pc padd-a">
+					<div class="pwd2 bg-img"></div>
+					<div class="uinput box-f1 mar-l">
+			        	<input id="againPasswd" type="password" placeholder="重复密码" maxlength="12"/>
+			        </div>
+				</div>
+				<div class="b-d2d box box-ac box-pc padd-a">
+					<div class="ni bg-img"></div>
+					<div class="uinput box-f1 mar-l">
+			        	<input id="nickName" type="text" maxlength="7" placeholder="昵称"/>
+			        </div>
+				</div>
+    		</div>
+    		<div onclick="submitReg()" class="padd-btn btn c-1d8 t-wh box box-ac box-pc br-a mar-t">注册</div>
+    	</div>
+	</body>
+<script src="../common/co/native.js"></script>
+<script src="../common/co/dom.js"></script>
+<script src="../common/co/co.js"></script>
+<script src="../common/js/app.js"></script>
+<script src="js/config.js"></script>
+<script src="js/custom.js"></script>
+<script>
+    var phoneCode;
+    var _userObj;
+    var view = app.currentView();
+    domReady(function(require){
+    	view.setBgcolor('#a4a4a4');
+    	view.enableKeyboard();
+    	app.disableSlideBack();
+    	getHeader();
+    	_userObj = new _dt.Auth.User();
+	})
+    
+	//获取验证码
+	function getWord(){
+		if($("#getVerify").text()!='获取验证码') return;
+		phoneCode = $("#phone").val();
+		if(phoneCode.length==0){
+			app.alert("请输入手机号");
+			return;
+		}
+		var phone=/^(13[0-9]|147|15[012356789]|17[0-9]|18[02356789])[0-9]{8}$/;
+		if(!phone.test(phoneCode)){
+			app.alert('请输入正确的手机号');
+			return;
+		}
+		
+	 	 _userObj.getTelCode(phoneCode,function(err){
+	 	 	alert(err);
+        },function(data){
+            if(data==true){
+            	countDownTime();
+            	app.alert("发送成功");
+            	countDownTime();
+            }
+        });
+	}
+	
+	//验证码获取倒计时
+	function countDownTime(){
+		$('#getVerify').html('请60秒后重新获取')
+		var waitTime,currTime=59;
+		var interval = setInterval(function(){
+			timeChange(currTime);
+			currTime--;
+			if(currTime<0){
+				clearInterval(interval);
+				currTime  = waitTime;
+			}
+		},1000);
+	}
+	//倒计时显示
+	function timeChange(waitTime){
+		if(waitTime!=0){
+			$('#getVerify').html('请'+waitTime+ '秒后重新获取');
+		}else{
+			$('#getVerify').html('获取验证码');
+		}
+	}
+	
+	//提交认证
+	function submitReg(){
+		var verifyCode = $("#verifyCode").val(); 
+		var passwd = $("#passwd").val(); 
+		var againPasswd = $("#againPasswd").val(); 
+		var nickName = $("#nickName").val().replace(/\s*/g, '');
+		if(verifyCode.length==0){
+			app.alert('请输入验证码');
+			return;
+		}
+		if(passwd.length==0){
+			app.alert('请输入密码');
+			return;
+		}
+		if(passwd.length < 6){
+			app.alert('密码至少六位');
+			return;
+		}
+		if(passwd != againPasswd){
+			app.alert("两次输入的密码不一致");
+			return;
+		}
+		if(nickName.length==0){
+			app.alert('请输入昵称');
+			return;
+		}
+		 var _obj= {
+            "tel":phoneCode,
+            "code":verifyCode,
+            "pwd":passwd,
+            "nname":nickName
+        };
+        _userObj.regForOneByMobile(_obj,function(err){
+			if(err.indexOf("无效的")>=0){
+        		app.alert("手机号或验证码不正确");
+        		return;	
+        	}
+            app.alert("注册失败，请重新注册");
+        },function(data){
+            if(data){
+            	app.storage.set('userTel',data.tel);
+            	app.storage.set('appSession',data.session);
+	            app.storage.remove('passwd');
+	            app.evalScriptInWindow('shuaXin()', 'login');
+            	app.alert("恭喜您，注册成功！");
+	            setTimeout(function(){
+		            view.back('login.html');//关闭注册页面
+	            },500);
+            }else{
+            	app.alert("手机号已注册，请前往登录");
+            }
+        });
+	}
+</script>
+</html>

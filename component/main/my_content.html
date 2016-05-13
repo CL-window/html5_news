@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../common/css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="../common/css/box.css"/>
+    <link rel="stylesheet" type="text/css" href="../common/css/color.css"/>
+    <link rel="stylesheet" type="text/css" href="../common/css/media.css"/>
+    <link rel="stylesheet" type="text/css" href="../common/co/css/co.css" />
+    <link rel="stylesheet" type="text/css" href="css/new_file.css"/>
+</head>
+<body>
+    <div class="box-f1 c-wh font0">
+    	<div class="c-307 wid box box-ov box-ac box-pc padd-t padd-b">
+			<div onclick="openNext();" class="myPhoto bg-img padd-a mar-b br-50" style="background-image:url(css/images/myPhoto.jpg);"></div>
+			<div class="login-js t-wh mar-t mar-b" style="text-align: center;word-wrap: normal;white-space: nowrap;text-overflow: ellipsis;width: 5em;overflow: hidden;">哈哈</div>
+		</div>
+		<div onclick="toMySet()" class="b-d2d box box-ac box-pc padd-a">
+			<div class="mySet bg-img"></div>
+			<div class="box-f1 padd-l">个人设置</div>
+			<div class="fa fa-angle-right fa-2x t-d2d"></div>
+		</div>
+		<div onclick="toMySave()" class="b-d2d box box-ac box-pc padd-a">
+			<div class="myStar bg-img"></div>
+			<div class="box-f1 padd-l">收藏</div>
+			<div class="fa fa-angle-right fa-2x t-d2d"></div>
+		</div>
+		<div id="aboutUs" class="b-d2d box box-ac box-pc padd-a">
+			<div class="about bg-img	"></div>
+			<div class="box-f1 padd-l">关于</div>
+			<div class="fa fa-angle-right fa-2x t-d2d"></div>
+		</div>
+		<div class="uhide"  id="logout">
+			<div class="b-d2d box box-ac box-pc padd-a" style="">
+			    <div class="exit bg-img1"></div>
+				<div class="box-f1 padd-l" style="line-height:2em;">退出登录</div>
+			</div>
+		</div>
+    </div>
+</body>
+<script src="../common/co/native.js"></script>
+<script src="../common/co/dom.js"></script>
+<script src="../common/co/co.js"></script>
+<script src="../common/js/app.js"></script>
+<script>
+	var userNname,headerImg,userId;
+	domReady(function(require){
+       	loadingUserInfo();//加载用户信息
+       	 app.event.addEvent('userHeaderImgPath', function(object) {
+		       if(object.key == null || object.key == ""){
+					$('.myPhoto').css('background-image','url(css/images/myPhoto.jpg)');
+	       		}else{
+		       		$('.myPhoto').css('background','url("'+object.key+'")');
+	       		}
+		  		$('.myPhoto').css('background-size','100% 100%');
+        		$("#logout").removeClass("uhide");
+		  });
+		  app.event.addEvent('nickname', function(object) {
+		       if(object.key==""&&object.key==null){
+			  		$(".login-js").html("请登录");
+	       		}else{
+			  		$(".login-js").html(object.key);
+	       		}
+		  });
+		  
+		  $('#aboutUs').button(function(){
+			  	var win = app.createWindow();
+	   			win.open('aboutUs.html');
+		  })
+    });
+    
+    //加载用户信息
+    function loadingUserInfo(){
+    	userId = app.storage.get("userId");
+    	userNname = app.storage.get('userNname');
+   		headerImg = app.storage.get('userHeaderImgPath');
+    	if(headerImg != "" && headerImg != null){
+    		$('.myPhoto').css('background','url("'+headerImg+'")');
+      		$('.myPhoto').css('background-size','100% 100%');
+    	}else{
+    		$('.myPhoto').css('background','url(css/images/myPhoto.jpg)');
+    		$('.myPhoto').css('background-size','100% 100%');
+    	}
+  		if((userId != "" && userId != null) || (userNname != "" && userNname != null)){
+    		$("#logout").removeClass("uhide");
+    	}else{
+    		$("#logout").addClass("uhide");
+    	}
+      	if(userNname != "" && userNname != null){
+      		$(".login-js").html(userNname);
+      	}else{
+      		$(".login-js").html("请登录");
+      	}
+    }
+    //注销帐号
+    $("#logout").on('click',function(){
+    	app.confirm({
+	       message: '您确定要退出登录吗？',
+	       title: '',
+	       btnCaptions: ['确认','取消'],
+	       callback: function(buttonIndex) {
+	           if(buttonIndex == 1){
+					app.storage.clear();
+					loadingUserInfo();
+				}
+	       }
+	   })
+	});
+	//打开我的设置
+    function toMySet(){
+    	var userId = app.storage.get('userId');
+    	var userNname =app.storage.get('userNname');
+    	if(!userId && !userNname){
+			app.alert('您还没有登录哦！');
+			return;
+		}
+		var win = app.createWindow();
+   		win.open('mySet.html');
+    }
+    //打开我的收藏
+    function toMySave(){
+    	var userId = app.storage.get('userId');
+    	var userNname =app.storage.get('userNname');
+    	if(!userId && !userNname){
+			app.alert('您还没有登录哦！');
+			return;
+		}
+		var win = app.createWindow();
+   		win.open('mySave.html');
+    }
+    
+    function openNext(){
+    	var userId =app.storage.get('userId');
+    	var userNname =app.storage.get('userNname');
+    	if(userId || userNname){
+    		return;
+    	}
+    	var win = app.createWindow();
+   		win.open('login.html');
+    }
+</script>
+</html>

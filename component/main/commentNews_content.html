@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,initial-scale=1.0">
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="../common/css/common.css"/>
+        <link rel="stylesheet" type="text/css" href="../common/css/box.css"/>
+        <link rel="stylesheet" type="text/css" href="../common/css/color.css"/>
+	    <link rel="stylesheet" type="text/css" href="css/new_file.css"/>
+	    <link rel="stylesheet" type="text/css" href="../common/css/media.css"/>
+	</head>
+	<body class="c-e4e">
+        <div class="box box-f1 c-e4e box-ov">
+        	<div class="uinput b-d7d c-wh mar-a padd-a br-a1">
+                <textarea id="opinion" class="t-999 wid" name="" rows="3" cols="" placeholder="请输入评论"></textarea>
+            </div>
+            <div class=" mar-t-08 mar-b-1" onclick="submitComment()" >
+            	<div class="mar-a btn box box-ac box-pc padd-3 t-wh c-fc5 tx-c mar-t br-a">发表评论</div>
+            </div>
+        	<div class="box box-ov mar-t mar-a">
+				<div class="b-307L padd-l font-wei">精彩评论</div>
+				<div id="comment-js" class="box box-ov">
+					
+				</div>
+				
+			</div>
+        </div>
+	</body>
+	<script src="../common/co/native.js"></script>
+	<script src="../common/co/dom.js"></script>
+	<script src="../common/co/co.js"></script>
+	<script src="../common/js/app.js"></script>
+	<script src="js/config.js"></script>
+	<script src="js/custom.js"></script>
+	<script>
+	   var userId;
+	   var newsId;
+//	   var user;
+	   var _comment,htmlFalg;
+	   var view = app.currentView();
+	   domReady(function(require){
+			app.disableSlideBack();
+	   		userId = app.storage.get('userId');
+//	   		user = app.storage.get('user');
+//	   		user = JSON.parse(user);
+//	   		app.alert(user);
+	   		newsId = app.storage.get('newsId');
+	   		newsImgId = app.storage.get("newsImgId");
+	   		htmlFalg = app.storage.get('htmlName');
+	   		getHeader();
+	   		_comment = new _dt.DB.Tab("comment");
+	   		getCommentLists();
+	    });
+	    
+	    //评论提交
+		function submitComment(){
+       		var opinionText = $("#opinion").val();
+       		if(opinionText.length == 0){
+       			app.alert("请输入评论");
+       			return;
+       		}else{
+       			var _new ={
+		            objid:htmlFalg == "pic"? newsImgId:newsId,
+		            user:userId,
+//					user:user,
+		            body:opinionText
+		        };
+		        _comment.creatData(_new,function(err){
+		            app.alert("评论失败");
+		        },function(data){
+					app.evalScriptInPop("getCommentLists()", 'newsDetail_content', 'newsDetail');
+		            app.alert("评论成功");
+		            setTimeout(function(){
+		            	app.closeWindow('commentNews.html')
+		            },800);
+		        });
+       		}
+       }
+       
+    //得到评论的信息列表
+	function getCommentLists(){
+		var _option = {
+            page:1,
+            size:1000,
+            include:{"user":"name,nname,headimg"},
+            where:{
+            	objid:htmlFalg == "pic"? newsImgId:newsId
+            	
+          	},
+          	order:[["_edtm",-1]]
+        };
+        _comment.getListData(_option,function(err){
+            app.alert("网络连接超时");
+        },function(data){
+//      	app.alert(data.data.length);
+        	if(data.data.length>0){
+        		for(var i in data.data){
+	            	var htmls = '';
+	            	var infoObj = data.data[i];
+//	            	app.alert(infoObj);
+	            	htmls += '<div class="mar-a box padd-a">';
+					htmls += '<div id="'+infoObj._id+'" class="photo bg-img1 mar-r br-50" '+(infoObj.user.headimg==""||infoObj.user.headimg==null? "" : " style=\"background-image:url("+infoObj.user.headimg+")\" " )+' ></div>';
+					htmls += '<div class="box box-f1 box-ov mar-l">';
+					htmls += '<div class="padd-b">'+infoObj.user.nname+'</div>';
+					htmls += '<div class="t-gra font-1">'+infoObj.body+'</div>';
+					htmls += '</div>';
+					htmls += '</div>';
+					$("#comment-js").append(htmls);
+	            }
+        	}else{
+        		$("#comment-js").html('<div class="box box-ac box-pc padd-a mar-a">还没有评论，快来评论吧！</div>');
+        	}
+        });
+     }
+	</script>
+</html>

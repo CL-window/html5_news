@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../common/css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="../common/css/box.css"/>
+    <link rel="stylesheet" type="text/css" href="../common/css/color.css"/>
+    <link rel="stylesheet" type="text/css" href="../common/co/css/co.css" />
+    <link rel="stylesheet" type="text/css" href="../common/css/media.css"/>
+    <link rel="stylesheet" type="text/css" href="css/new_file.css"/>
+</head>
+<body class="c-wh">
+	<div id="newsBody" class="box box-ov box-f1">
+	</div>
+</body>
+<script src="../common/co/native.js"></script>
+<script src="../common/co/dom.js"></script>
+<script src="../common/co/co.js"></script>
+<script src="../common/js/app.js"></script>
+<script src="js/config.js"></script>
+<script src="js/custom.js"></script>
+<script>
+    var _collection;
+    var view = app.currentView();
+	domReady(function(require){
+		getHeader();
+		app.disableSlideBack();
+		_collection = new _dt.DB.Tab("collection");
+		setDataLists(1);
+        var headerRefresher = view.addHeaderRefresh({
+            contentdown: '下拉可以刷新',
+            contentover: '释放立即刷新',
+            contentrefresh: '正在刷新...',
+            callback:function(){
+            	var nowpage = 1;
+				var isImgLoading = true;
+				var isImgLastPage = false;
+				setDataLists(1);
+                headerRefresher.completeRefresh();
+            }
+          }); 
+         var footerRefresher = view.addFooterRefresh({
+            contentdown: '上拉可以加载',
+            contentover: '释放立即加载',
+            contentrefresh: '正在加载...',
+            callback:function(){
+            	setDataLists(10);
+                footerRefresher.completeRefresh();
+            }
+          }); 
+	});
+	var page = 1;
+	//向页面中填充数据
+	function setDataLists(count){
+		if(count == 1){
+			page = 1;
+		}else{
+			page = page + 9;
+		}
+		var _option = {
+            page:page,
+            size:10,
+            include:{"news":"title,type,brief,image"},
+            where:{
+                type: "new",
+                _euser: app.storage.get('userId')
+            },
+            order:[["_edtm",1]]
+        };
+        _collection.getListData(_option,
+	        function(err){
+	            app.alert("网络请求超时,请检查网络");
+	        },function(data){
+	        	if(data.data.length>0){
+	        		var htmls ='';
+	        		for(var i in data.data){   		
+			    		var newsInfo = data.data[i];
+						htmls += '<div id="'+newsInfo.news._id+'" data-id="'+newsInfo._id+'" class="showInfo-js box b-d2d padd-a">';
+						htmls += '<div class="wh-pic2"><img src="'+newsInfo.news.image+'" class="wh-100"></div>';
+						htmls += '<div class="box box-f1 box-ov padd-l">';
+						htmls += '<div class="omit1 font1">'+newsInfo.news.title+'</div>';
+						htmls += '<div class="t-gra padd-t omit line2">'+newsInfo.news.brief+'</div>';
+						htmls += '</div>';
+						htmls += '</div>';				
+			        }
+			        if(count == 1){
+				        $("#newsBody").html(htmls);
+			        }else{
+			        	$("#newsBody").append(htmls);
+			        }
+			    	//跳转到详情页面
+			    	$(".showInfo-js").button(function(btn,el){
+						app.storage.set("newsId",btn.id);
+						var wind = app.createWindow();
+						wind.open('newsDetail.html', 'newsDetail');
+			    	})
+	        	}else{
+	        		if($("#newsBody").html().indexOf("无更多数据")>0){
+		    			return;
+		    		}
+	        		var emptyHtml = '<div class="box box-pc mar-t">无更多数据</div>';
+	        		$("#newsBody").append(emptyHtml);
+	        	}
+        	}
+        );
+	}
+</script>
+</html>
